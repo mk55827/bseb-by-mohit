@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSEB Result Portal | By Mohit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff7eb9; --accent: #00f2fe; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #050208;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* --- 1. FLOWER RAIN ANIMATION --- */
+        .flower {
+            position: absolute; background: #ffb7c5; border-radius: 150% 0 150% 0;
+            opacity: 0.6; pointer-events: none; animation: fall linear infinite; z-index: 0;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* --- 2. WELCOME ANIMATION --- */
+        #intro-layer {
+            position: fixed; inset: 0; background: #000;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; z-index: 1000; cursor: pointer;
+        }
+        .welcome-msg { 
+            font-family: 'Orbitron'; font-size: clamp(2rem, 10vw, 4rem); 
+            text-shadow: 0 0 20px var(--primary); 
+            animation: zoomIn 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .created-by { 
+            font-size: 1.2rem; color: var(--primary); margin-top: 10px; 
+            letter-spacing: 5px; opacity: 0;
+            animation: fadeIn 1s 1s forwards;
+        }
+
+        /* --- 3. MAIN CARD ANIMATION --- */
+        #main-ui { display: none; width: 95%; max-width: 450px; z-index: 10; text-align: center; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
+            padding: 30px 20px; border-radius: 35px; border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: float 4s ease-in-out infinite, slideUp 1s forwards;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .result-section {
+            background: rgba(255,255,255,0.03); padding: 20px; border-radius: 25px; 
+            margin: 20px 0; border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+        .result-section:hover { transform: scale(1.02); background: rgba(255,255,255,0.07); }
+
+        .countdown { font-family: 'Orbitron'; font-size: 1.4rem; color: var(--accent); margin: 10px 0; }
+
+        .btn-link {
+            display: block; width: 100%; padding: 12px; background: var(--primary); 
+            border-radius: 12px; color: #000; text-decoration: none; font-weight: 900; 
+            border: none; cursor: pointer; transition: 0.3s; font-family: 'Poppins';
+        }
+        .btn-link:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
+
+        /* --- 4. GLASS BREAK & GOOD LUCK --- */
+        #break-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            display: none; z-index: 2000; justify-content: center; align-items: center;
+            animation: shake 0.2s 2;
+        }
+        .luck-msg { font-family: 'Orbitron'; font-size: 2.5rem; color: gold; text-shadow: 0 0 30px orange; animation: popOut 0.5s forwards; }
+
+        @keyframes zoomIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0% { transform: translate(5px); } 50% { transform: translate(-5px); } 100% { transform: translate(0); } }
+        @keyframes popOut { from { transform: scale(0); } to { transform: scale(1.2); } }
+
+    </style>
+</head>
+<body>
+
+    <audio id="breakSound" src="https://assets.mixkit.co/active_storage/sfx/1118/1118-preview.mp3"></audio>
+    <div id="flower-container"></div>
+
+    <div id="intro-layer" onclick="enterPortal()">
+        <h1 class="welcome-msg">WELCOME</h1>
+        <p class="created-by">CREATED BY MOHIT</p>
+        <p style="margin-top: 40px; font-size: 0.7rem; opacity: 0.4; letter-spacing: 2px;">CLICK ANYWHERE TO ENTER</p>
+    </div>
+
+    <div id="main-ui">
+        <div class="glass-card">
+            <h2 style="font-family: 'Orbitron'; font-size: 1.5rem; color: var(--primary); margin-bottom: 5px;">BSEB PORTAL</h2>
+            <p style="font-size: 0.7rem; color: #888; margin-bottom: 20px;">Session 2025-26</p>
+            
+            <div class="result-section">
+                <p style="font-size: 0.8rem; letter-spacing: 1px;">MATRIC (10th) RESULT</p>
+                <div id="matric-timer" class="countdown">00:00:00:00</div>
+                <button class="btn-link" onclick="handleResult('http://results.biharboardonline.com/')">CHECK RESULT</button>
+            </div>
+
+            <div class="result-section">
+                <p style="font-size: 0.8rem; letter-spacing: 1px; color: var(--accent);">INTER (12th) RESULT</p>
+                <div id="inter-timer" class="countdown" style="color: var(--primary);">00:00:00:00</div>
+                <button class="btn-link" style="background: var(--accent);" onclick="handleResult('http://results.biharboardonline.com/')">CHECK RESULT</button>
+            </div>
+            
+            <p style="margin-top: 15px; font-size: 0.6rem; color: #444;">Powered by Mohit </p>
+        </div>
+    </div>
+
+    <div id="break-overlay">
+        <h1 class="luck-msg">GOOD LUCK! 🍀</h1>
+    </div>
+
+    <script>
+        // Flower Rain Logic
+        function createFlower() {
+            const container = document.getElementById('flower-container');
+            const flower = document.createElement('div');
+            flower.classList.add('flower');
+            flower.style.left = Math.random() * 100 + 'vw';
+            flower.style.width = Math.random() * 10 + 10 + 'px';
+            flower.style.height = flower.style.width;
+            flower.style.animationDuration = Math.random() * 3 + 3 + 's';
+            container.appendChild(flower);
+            setTimeout(() => flower.remove(), 6000);
+        }
+        setInterval(createFlower, 200);
+
+        // --- DUAL TIMER CONFIG (Yahan Date Badlein) ---
+        const matricDate = new Date("March 31, 2026 13:00:00").getTime();
+        const interDate = new Date("March 23, 2026 15:00:00").getTime();
+
+        function startCountdowns() {
+            setInterval(() => {
+                const now = new Date().getTime();
+                updateTimer(now, matricDate, 'matric-timer');
+                updateTimer(now, interDate, 'inter-timer');
+            }, 1000);
+        }
+
+        function updateTimer(now, target, elementId) {
+            const diff = target - now;
+            const el = document.getElementById(elementId);
+            if (diff <= 0) { el.innerHTML = "RESULT LIVE!"; return; }
+
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            el.innerHTML = `${d}d ${h}h ${m}m ${s}s`;
+        }
+
+        function enterPortal() {
+            document.getElementById('intro-layer').style.display = 'none';
+            document.getElementById('main-ui').style.display = 'block';
+            startCountdowns();
+        }
+
+        function handleResult(url) {
+            document.getElementById('breakSound').play();
+            document.getElementById('break-overlay').style.display = 'flex';
+            setTimeout(() => {
+                window.open(url, '_blank');
+                document.getElementById('break-overlay').style.display = 'none';
+            }, 1800);
+        }
+    </script>
+</body>
+</html>
