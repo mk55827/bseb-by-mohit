@@ -47,7 +47,7 @@
             animation: fadeIn 1s 1s forwards;
         }
 
-        /* --- 3. MAIN CARD ANIMATION --- */
+        /* --- 3. MAIN CARD --- */
         #main-ui { display: none; width: 95%; max-width: 450px; z-index: 10; text-align: center; }
         .glass-card {
             background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
@@ -76,7 +76,7 @@
         }
         .btn-link:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
 
-        /* --- 4. GLASS BREAK & GOOD LUCK --- */
+        /* --- 4. OVERLAYS (Break & Result) --- */
         #break-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             display: none; z-index: 2000; justify-content: center; align-items: center;
@@ -84,6 +84,22 @@
         }
         .luck-msg { font-family: 'Orbitron'; font-size: 2.5rem; color: gold; text-shadow: 0 0 30px orange; animation: popOut 0.5s forwards; }
 
+        #result-viewer {
+            position: fixed; inset: 0; background: #000;
+            display: none; flex-direction: column; z-index: 3000;
+        }
+        .viewer-header {
+            background: #111; padding: 15px; display: flex;
+            justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--primary);
+        }
+        #result-frame { width: 100%; flex-grow: 1; border: none; background: #fff; }
+        .close-btn { 
+            background: var(--primary); color: #000; border: none; 
+            padding: 8px 15px; border-radius: 8px; font-weight: 900; cursor: pointer; 
+        }
+
+        /* Animations */
         @keyframes zoomIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
@@ -111,13 +127,13 @@
             <div class="result-section">
                 <p style="font-size: 0.8rem; letter-spacing: 1px;">MATRIC (10th) RESULT</p>
                 <div id="matric-timer" class="countdown">00:00:00:00</div>
-                <button class="btn-link" onclick="handleResult('http://results.biharboardonline.com/')">CHECK RESULT</button>
+                <button class="btn-link" onclick="handleResult('https://results.biharboardonline.com/secondary26', 'MATRIC RESULT 2025')">CHECK RESULT</button>
             </div>
 
             <div class="result-section">
                 <p style="font-size: 0.8rem; letter-spacing: 1px; color: var(--accent);">INTER (12th) RESULT</p>
                 <div id="inter-timer" class="countdown" style="color: var(--primary);">00:00:00:00</div>
-                <button class="btn-link" style="background: var(--accent);" onclick="handleResult('http://results.biharboardonline.com/')">CHECK RESULT</button>
+                <button class="btn-link" style="background: var(--accent);" onclick="handleResult('https://results.biharboardonline.com/Seniorsecondary25/')">CHECK RESULT</button>
             </div>
             
             <p style="margin-top: 15px; font-size: 0.6rem; color: #444;">Powered by Mohit </p>
@@ -126,6 +142,14 @@
 
     <div id="break-overlay">
         <h1 class="luck-msg">GOOD LUCK! 🍀</h1>
+    </div>
+
+    <div id="result-viewer">
+        <div class="viewer-header">
+            <span id="viewer-title" style="font-family: 'Orbitron'; color: var(--primary);">RESULT 2025</span>
+            <button class="close-btn" onclick="closeViewer()">CLOSE [X]</button>
+        </div>
+        <iframe id="result-frame" src=""></iframe>
     </div>
 
     <script>
@@ -143,7 +167,7 @@
         }
         setInterval(createFlower, 200);
 
-        // --- DUAL TIMER CONFIG (Yahan Date Badlein) ---
+        // --- DUAL TIMER CONFIG ---
         const matricDate = new Date("March 31, 2026 13:00:00").getTime();
         const interDate = new Date("March 23, 2026 15:00:00").getTime();
 
@@ -173,13 +197,26 @@
             startCountdowns();
         }
 
-        function handleResult(url) {
+        // --- NEW IFRAME LOGIC ---
+        function handleResult(url, title) {
             document.getElementById('breakSound').play();
             document.getElementById('break-overlay').style.display = 'flex';
+            
             setTimeout(() => {
-                window.open(url, '_blank');
                 document.getElementById('break-overlay').style.display = 'none';
+                const viewer = document.getElementById('result-viewer');
+                const frame = document.getElementById('result-frame');
+                const titleEl = document.getElementById('viewer-title');
+                
+                titleEl.innerText = title;
+                frame.src = url;
+                viewer.style.display = 'flex';
             }, 1800);
+        }
+
+        function closeViewer() {
+            document.getElementById('result-viewer').style.display = 'none';
+            document.getElementById('result-frame').src = "";
         }
     </script>
 </body>
