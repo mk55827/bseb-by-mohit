@@ -221,6 +221,24 @@
             document.getElementById('result-viewer').style.display = 'none';
             document.getElementById('result-frame').src = "";
         }
+
+        function openServer2(url) {
+    // Sound play karega
+    const sound = document.getElementById('breakSound');
+    if(sound) sound.play();
+
+    // "Good Luck" wala overlay dikhayega
+    document.getElementById('break-overlay').style.display = 'flex';
+    
+    // 1.8 seconds baad naya tab khulega
+    setTimeout(() => {
+        document.getElementById('break-overlay').style.display = 'none';
+        
+        // Yeh line naye tab mein link open karegi
+        window.open(url, '_blank');
+        
+    }, 1800);
+}
     </script>
 </body>
 </html>
